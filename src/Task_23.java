@@ -7,5 +7,12 @@ public class Task_23 {
 
         System.out.println("Old graph");
         System.out.println(graph);
+
+        graph.addVertex(1);
+        graph.addVertex(4);
+        graph.addVertex(12);
+
+        System.out.println("New graph");
+        System.out.println(graph);
     }
 }

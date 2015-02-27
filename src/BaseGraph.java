@@ -1,4 +1,7 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Integer.parseInt;
@@ -9,8 +12,12 @@ public class BaseGraph implements Graph {
 
     @Override
     public void addVertex(int vertex) {
-        vertexes.add(vertex);
-        G.put(vertex, new ArrayList<Integer>());
+        if(!vertexes.contains(vertex)) {
+            vertexes.add(vertex);
+            G.put(vertex, new ArrayList<Integer>());
+        } else {
+
+        }
     }
 
     public Set<Integer> getVertexes() {
@@ -33,14 +40,14 @@ public class BaseGraph implements Graph {
 
             for (int j = 1; j < splited.length; j++) {
                 int to = parseInt(splited[j]);
-                addArc(from, to);
+                addEdge(from, to);
             }
         }
     }
 
     @Override
     public void addArc(int from, int to) {
-        if(!G.containsKey(from)) {
+        if (!G.containsKey(from)) {
             G.put(from, new ArrayList<Integer>());
         }
 
@@ -55,15 +62,19 @@ public class BaseGraph implements Graph {
 
     @Override
     public void removeArc(int from, int to) throws Exception {
-        if(!G.containsKey(from)) {
+        if (!G.containsKey(from)) {
             throw new Exception("Vertex " + from + " not found!");
         }
 
-        if(!G.get(from).contains(to)) {
+        if (!vertexes.contains(to)) {
+            throw new Exception("Vertex " + to + " not found!");
+        }
+
+        if (!G.get(from).contains(to)) {
             throw new Exception("Arc " + from + " -> " + to + " not found!");
         }
 
-        G.get(from).remove((Integer) to);
+        while(G.get(from).remove((Integer) to));
     }
 
     @Override
@@ -74,18 +85,11 @@ public class BaseGraph implements Graph {
 
     @Override
     public int degree(int vertex) throws Exception {
-        if(!G.containsKey(vertex)) {
+        if (!G.containsKey(vertex)) {
             throw new Exception("Vertex " + vertex + " not found!");
         }
 
-        int ans = G.get(vertex).size();
-        for (int u : G.keySet()) {
-            if(G.get(u).contains(vertex)) {
-                ++ans;
-            }
-        }
-
-        return ans;
+        return G.get(vertex).size() / 2;
     }
 
 
@@ -97,8 +101,7 @@ public class BaseGraph implements Graph {
         for (Integer from : G.keySet()) {
             sb.append(from).append(": ");
 
-            List<Integer> toList = G.get(from);
-            for(int to : toList) {
+            for (int to : new HashSet<>(G.get(from))) {
                 sb.append(to).append(" ");
             }
             sb.append("\n");
