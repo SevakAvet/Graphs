@@ -78,7 +78,14 @@ public class BaseGraph implements Graph {
             throw new Exception("Vertex " + vertex + " not found!");
         }
 
-        return G.get(vertex).size();
+        int ans = G.get(vertex).size();
+        for (int u : G.keySet()) {
+            if(G.get(u).contains(vertex)) {
+                ++ans;
+            }
+        }
+
+        return ans;
     }
 
 
