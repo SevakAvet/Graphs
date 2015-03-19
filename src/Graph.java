@@ -13,6 +13,8 @@ public interface Graph {
 
     public void addVertex(int vertex);
 
+    public void removeVertex(int vertex) throws Exception;
+
     public Set<Integer> getVertexes();
 }
 

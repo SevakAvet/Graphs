@@ -1,6 +1,6 @@
 import java.io.File;
 
-public class Task_1 {
+public class Task_1_1 {
     public static void main(String[] args) throws Exception {
         Graph graph = new BaseGraph(new File("input.txt"));
         System.out.println(graph);
