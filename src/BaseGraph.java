@@ -133,8 +133,10 @@ public class BaseGraph implements Graph {
     }
 
     public boolean hasCycles() {
+        Map<Integer, Integer> colors = new HashMap<>();
+
         for (int from : G.keySet()) {
-            if (hasCycles(from)) {
+            if (hasCycles(colors, from)) {
                 return true;
             }
         }
@@ -142,25 +144,24 @@ public class BaseGraph implements Graph {
         return false;
     }
 
-    private boolean hasCycles(int from) {
-        Queue<Integer> q = new LinkedList<>();
-        Set<Integer> used = new HashSet<>();
+    private boolean hasCycles(Map<Integer, Integer> colors, int from) {
+        colors.put(from, 1);
 
-        q.add(from);
-        while (!q.isEmpty()) {
-            int u = q.poll();
-            if (!G.containsKey(u)) continue;
+        for (int to : G.get(from)) {
+            if(!colors.containsKey(to)) {
+                colors.put(to, 0);
+            }
 
-            for (int v : G.get(u)) {
-                if (!used.contains(v)) {
-                    used.add(v);
-                    q.add(v);
-                } else {
+            if (colors.get(to) == 0) {
+                if (hasCycles (colors, to)) {
                     return true;
                 }
+            } else if (colors.get(to) == 1) {
+                return true;
             }
         }
 
+        colors.put(from, 2);
         return false;
     }
 
@@ -170,6 +171,7 @@ public class BaseGraph implements Graph {
     }
 
     public int componentsCount() {
+
         int ans = 0;
         Set<Integer> used = new HashSet<>();
 
