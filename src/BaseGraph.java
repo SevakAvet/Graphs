@@ -6,28 +6,32 @@ import java.util.*;
 
 import static java.lang.Integer.parseInt;
 
-public class BaseGraph 
-        implements Graph {
-    private Set<Integer> vertexes;
-    private Map<Integer, List<Integer>> G;
+public class BaseGraph implements Graph {
+    private Map<Integer, Set<Integer>> G;
 
     @Override
     public void addVertex(int vertex) {
-        if (!vertexes.contains(vertex)) {
-            vertexes.add(vertex);
-            G.put(vertex, new ArrayList<Integer>());
-        } else {
-
+        if (!G.containsKey(vertex)) {
+            G.put(vertex, new HashSet<Integer>());
         }
     }
 
     @Override
     public void removeVertex(int vertex) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
+        if(!G.containsKey(vertex)) {
+            throw new Exception("Vertex " + vertex + " not found!");
+        }
+
+        G.remove(vertex);
+        for (int u : G.keySet()) {
+            if(G.get(u).contains(vertex)) {
+                G.get(u).remove(vertex);
+            }
+        }
     }
 
     public Set<Integer> getVertexes() {
-        return this.vertexes;
+        return G.keySet();
     }
 
     private BaseGraph() {
@@ -41,7 +45,6 @@ public class BaseGraph
 
     public BaseGraph(BufferedReader reader) throws IOException {
         G = new HashMap<>();
-        vertexes = new HashSet<>();
 
         int n = parseInt(reader.readLine());
         for (int i = 0; i < n; i++) {
@@ -49,8 +52,7 @@ public class BaseGraph
             String[] splited = line.split(" ");
 
             int from = parseInt(splited[0]);
-            vertexes.add(from);
-            G.put(from, new ArrayList<Integer>());
+            G.put(from, new HashSet<Integer>());
 
             for (int j = 1; j < splited.length; j++) {
                 int to = parseInt(splited[j]);
@@ -64,27 +66,14 @@ public class BaseGraph
         if (!G.containsKey(from)) {
             throw new Exception("Vertex " + from + " not found!");
         }
-
-        if (!vertexes.contains(to)) {
-            throw new Exception("Vertex " + to + " not found!");
-        }
-
         return G.get(from).contains(to);
     }
 
-    @Override
-    public List<Integer> getList(int vertex) throws Exception {
-        if (!G.containsKey(vertex)) {
-            throw new Exception("Vertex " + vertex + " not found!");
-        }
-
-        return G.get(vertex);
-    }
 
     @Override
     public void addArc(int from, int to) {
         if (!G.containsKey(from)) {
-            G.put(from, new ArrayList<Integer>());
+            G.put(from, new HashSet<Integer>());
         }
 
         G.get(from).add(to);
@@ -102,15 +91,11 @@ public class BaseGraph
             throw new Exception("Vertex " + from + " not found!");
         }
 
-        if (!vertexes.contains(to)) {
-            throw new Exception("Vertex " + to + " not found!");
-        }
-
         if (!G.get(from).contains(to)) {
             throw new Exception("Arc " + from + " -> " + to + " not found!");
         }
 
-        while (G.get(from).remove((Integer) to)) ;
+        while (G.get(from).remove(to));
     }
 
     @Override
@@ -135,7 +120,7 @@ public class BaseGraph
         }
 
         int ans = G.get(vertex).size();
-        for (int u : vertexes) {
+        for (int u : G.keySet()) {
             if (u == vertex)
                 continue;
 
@@ -151,6 +136,28 @@ public class BaseGraph
         for (int from : G.keySet()) {
             if (hasCycles(from)) {
                 return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean hasCycles(int from) {
+        Queue<Integer> q = new LinkedList<>();
+        Set<Integer> used = new HashSet<>();
+
+        q.add(from);
+        while (!q.isEmpty()) {
+            int u = q.poll();
+            if (!G.containsKey(u)) continue;
+
+            for (int v : G.get(u)) {
+                if (!used.contains(v)) {
+                    used.add(v);
+                    q.add(v);
+                } else {
+                    return true;
+                }
             }
         }
 
@@ -184,8 +191,8 @@ public class BaseGraph
     }
 
     private class Pair {
-
         int x, y;
+
         public Pair(int x, int y) {
             this.x = x;
             this.y = y;
@@ -210,8 +217,9 @@ public class BaseGraph
             result = 31 * result + y;
             return result;
         }
-
     }
+
+
     public int componentsCount() {
         int ans = 0;
         Set<Integer> used = new HashSet<>();
@@ -239,49 +247,19 @@ public class BaseGraph
         return ans;
     }
 
-
-    private boolean hasCycles(int from) {
-        Queue<Integer> q = new LinkedList<>();
-        Set<Integer> used = new HashSet<>();
-
-        q.add(from);
-        while (!q.isEmpty()) {
-            int u = q.poll();
-            if (!G.containsKey(u)) continue;
-
-            for (int v : G.get(u)) {
-                if (!used.contains(v)) {
-                    used.add(v);
-                    q.add(v);
-                } else {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
     public BaseGraph clone() {
         BaseGraph g = new BaseGraph();
 
-        Set<Integer> vertexes = new HashSet<>();
-        for (Integer vertex : this.vertexes) {
-            vertexes.add(vertex);
-        }
-
-        Map<Integer, List<Integer>> G = new HashMap<>();
+        Map<Integer, Set<Integer>> G = new HashMap<>();
         for (Integer vertex : this.G.keySet()) {
-            G.put(vertex, new ArrayList<Integer>());
+            G.put(vertex, new HashSet<Integer>());
 
             for (Integer to : this.G.get(vertex)) {
                 G.get(vertex).add(to);
             }
         }
 
-        g.vertexes =  vertexes;
         g.G = G;
-
         return g;
     }
 

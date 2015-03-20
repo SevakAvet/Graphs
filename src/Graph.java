@@ -4,8 +4,6 @@ import java.util.Set;
 public interface Graph extends Cloneable {
     public boolean isAdjacent(int from, int to) throws Exception;
 
-    public List<Integer> getList(int vertex) throws Exception;
-
     public void addArc(int from, int to);
 
     public void addEdge(int from, int to);

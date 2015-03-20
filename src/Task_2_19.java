@@ -6,6 +6,6 @@ public class Task_2_19 {
         BaseGraph g = new BaseGraph(new File("input.txt"));
         System.out.println(g);
 
-        System.out.println(g.hasCycles() ? "Graph ia cyclic" : "Graph isn't cyclic");
+        System.out.println(g.hasCycles() ? "Graph is cyclic" : "Graph is acyclic");
     }
 }

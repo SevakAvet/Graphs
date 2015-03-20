@@ -10,7 +10,7 @@ public class Task_2_22 {
         int v = -1;
 
         for(int u : g.getVertexes()) {
-            BaseGraph gCopy = new BaseGraph(file);
+            BaseGraph gCopy = g.clone();
             gCopy.removeVertex(u);
 
             if(!gCopy.hasCycles() && gCopy.componentsCount() == 1) {
