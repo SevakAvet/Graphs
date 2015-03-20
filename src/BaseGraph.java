@@ -9,39 +9,9 @@ import static java.lang.Integer.parseInt;
 public class BaseGraph implements Graph {
     private Map<Integer, Set<Integer>> G;
 
-    @Override
-    public void addVertex(int vertex) {
-        if (!G.containsKey(vertex)) {
-            G.put(vertex, new HashSet<Integer>());
-        }
-    }
-
-    @Override
-    public void removeVertex(int vertex) throws Exception {
-        if(!G.containsKey(vertex)) {
-            throw new Exception("Vertex " + vertex + " not found!");
-        }
-
-        G.remove(vertex);
-        for (int u : G.keySet()) {
-            if(G.get(u).contains(vertex)) {
-                G.get(u).remove(vertex);
-            }
-        }
-    }
-
-    public Set<Integer> getVertexes() {
-        return G.keySet();
-    }
-
     private BaseGraph() {
 
     }
-
-    public BaseGraph(File file) throws IOException {
-        this(new BufferedReader(new FileReader(file)));
-    }
-
 
     public BaseGraph(BufferedReader reader) throws IOException {
         G = new HashMap<>();
@@ -61,14 +31,35 @@ public class BaseGraph implements Graph {
         }
     }
 
-    @Override
-    public boolean isAdjacent(int from, int to) throws Exception {
-        if (!G.containsKey(from)) {
-            throw new Exception("Vertex " + from + " not found!");
-        }
-        return G.get(from).contains(to);
+    public BaseGraph(File file) throws IOException {
+        this(new BufferedReader(new FileReader(file)));
     }
 
+    @Override
+    public void addVertex(int vertex) {
+        if (!G.containsKey(vertex)) {
+            G.put(vertex, new HashSet<Integer>());
+        }
+    }
+
+    @Override
+    public void removeVertex(int vertex) throws Exception {
+        if (!G.containsKey(vertex)) {
+            throw new Exception("Vertex " + vertex + " not found!");
+        }
+
+        G.remove(vertex);
+        for (int u : G.keySet()) {
+            if (G.get(u).contains(vertex)) {
+                G.get(u).remove(vertex);
+            }
+        }
+    }
+
+
+    public Set<Integer> getVertexes() {
+        return G.keySet();
+    }
 
     @Override
     public void addArc(int from, int to) {
@@ -78,6 +69,7 @@ public class BaseGraph implements Graph {
 
         G.get(from).add(to);
     }
+
 
     @Override
     public void addEdge(int from, int to) {
@@ -95,13 +87,21 @@ public class BaseGraph implements Graph {
             throw new Exception("Arc " + from + " -> " + to + " not found!");
         }
 
-        while (G.get(from).remove(to));
+        while (G.get(from).remove(to)) ;
     }
 
     @Override
     public void removeEdge(int from, int to) throws Exception {
         this.removeArc(from, to);
         this.removeArc(to, from);
+    }
+
+    @Override
+    public boolean isAdjacent(int from, int to) throws Exception {
+        if (!G.containsKey(from)) {
+            throw new Exception("Vertex " + from + " not found!");
+        }
+        return G.get(from).contains(to);
     }
 
     @Override
@@ -166,59 +166,8 @@ public class BaseGraph implements Graph {
 
     public int radius() {
         int radius = -1;
-
-        int n = G.keySet().size();
-        int INF = (int) 1e9;
-        List<Integer> vertexList = new ArrayList<>(G.keySet());
-        Map<Pair, Integer> d = new HashMap<>();
-
-        for(int u : vertexList) {
-            for(int v : vertexList) {
-                if(G.containsKey(u) && G.get(u).contains(v) ||
-                   G.containsKey(v) && G.get(v).contains(u)) {
-                    Pair p1 = new Pair(u, v);
-                    Pair p2 = new Pair(v, u);
-
-                    d.put(p1, 1);
-                }
-
-            }
-        }
-
-
-
         return radius;
     }
-
-    private class Pair {
-        int x, y;
-
-        public Pair(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Pair pair = (Pair) o;
-
-            if (x != pair.x) return false;
-            if (y != pair.y) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = x;
-            result = 31 * result + y;
-            return result;
-        }
-    }
-
 
     public int componentsCount() {
         int ans = 0;
