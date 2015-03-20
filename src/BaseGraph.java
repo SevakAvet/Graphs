@@ -262,7 +262,7 @@ public class BaseGraph
         return false;
     }
 
-    public Graph clone() {
+    public BaseGraph clone() {
         BaseGraph g = new BaseGraph();
 
         Set<Integer> vertexes = new HashSet<>();
