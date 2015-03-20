@@ -11,29 +11,6 @@ public class BaseGraph
     private Set<Integer> vertexes;
     private Map<Integer, List<Integer>> G;
 
-    public Graph clone() {
-        BaseGraph g = new BaseGraph();
-
-        Set<Integer> vertexes = new HashSet<>();
-        for (Integer vertex : this.vertexes) {
-            vertexes.add(vertex);
-        }
-
-        Map<Integer, List<Integer>> G = new HashMap<>();
-        for (Integer vertex : this.G.keySet()) {
-            G.put(vertex, new ArrayList<Integer>());
-
-            for (Integer to : this.G.get(vertex)) {
-                G.get(vertex).add(to);
-            }
-        }
-
-        g.vertexes =  vertexes;
-        g.G = G;
-
-        return g;
-    }
-
     @Override
     public void addVertex(int vertex) {
         if (!vertexes.contains(vertex)) {
@@ -56,6 +33,11 @@ public class BaseGraph
     private BaseGraph() {
 
     }
+
+    public BaseGraph(File file) throws IOException {
+        this(new BufferedReader(new FileReader(file)));
+    }
+
 
     public BaseGraph(BufferedReader reader) throws IOException {
         G = new HashMap<>();
@@ -164,6 +146,7 @@ public class BaseGraph
 
         return ans;
     }
+
     public boolean hasCycles() {
         for (int from : G.keySet()) {
             if (hasCycles(from)) {
@@ -201,8 +184,8 @@ public class BaseGraph
     }
 
     private class Pair {
-        int x, y;
 
+        int x, y;
         public Pair(int x, int y) {
             this.x = x;
             this.y = y;
@@ -227,9 +210,8 @@ public class BaseGraph
             result = 31 * result + y;
             return result;
         }
+
     }
-
-
     public int componentsCount() {
         int ans = 0;
         Set<Integer> used = new HashSet<>();
@@ -257,6 +239,7 @@ public class BaseGraph
         return ans;
     }
 
+
     private boolean hasCycles(int from) {
         Queue<Integer> q = new LinkedList<>();
         Set<Integer> used = new HashSet<>();
@@ -277,6 +260,29 @@ public class BaseGraph
         }
 
         return false;
+    }
+
+    public Graph clone() {
+        BaseGraph g = new BaseGraph();
+
+        Set<Integer> vertexes = new HashSet<>();
+        for (Integer vertex : this.vertexes) {
+            vertexes.add(vertex);
+        }
+
+        Map<Integer, List<Integer>> G = new HashMap<>();
+        for (Integer vertex : this.G.keySet()) {
+            G.put(vertex, new ArrayList<Integer>());
+
+            for (Integer to : this.G.get(vertex)) {
+                G.get(vertex).add(to);
+            }
+        }
+
+        g.vertexes =  vertexes;
+        g.G = G;
+
+        return g;
     }
 
     @Override
