@@ -1,8 +1,10 @@
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 public class Task_1_1 {
     public static void main(String[] args) throws Exception {
-        Graph graph = new BaseGraph(new File("input.txt"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        Graph graph = new BaseGraph(reader);
         System.out.println(graph);
 
         System.out.println("Vertexes degrees:");

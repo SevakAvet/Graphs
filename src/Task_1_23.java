@@ -1,16 +1,26 @@
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Task_1_23 {
     public static void main(String[] args) throws IOException {
-        Graph graph = new BaseGraph(new File("input.txt"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        Graph graph = new BaseGraph(reader);
 
         System.out.println("Old graph");
         System.out.println(graph);
 
+        System.out.print("Enter count of vertexes: ");
+        int n = Integer.parseInt(reader.readLine());
+        System.out.println();
+
+        for (int i = 0; i < n; i++) {
+            System.out.print("Vertex " + (i + 1) + " = ");
+            graph.addVertex(Integer.parseInt(reader.readLine()));
+        }
+
         System.out.println("New graph");
-        graph.addVertex(1);
-        graph.addVertex(400);
         System.out.println(graph);
     }
 }

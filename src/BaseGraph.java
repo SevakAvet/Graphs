@@ -5,60 +5,104 @@ import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Integer.parseInt;
-import static java.lang.Math.min;
 
-public class BaseGraph implements Graph, Cloneable {
-    private Map<Integer, Set<Integer>> G;
+public class BaseGraph 
+        implements Graph {
+    private Set<Integer> vertexes;
+    private Map<Integer, List<Integer>> G;
 
-    public BaseGraph(File file) throws IOException {
+    public Graph clone() {
+        BaseGraph g = new BaseGraph();
+
+        Set<Integer> vertexes = new HashSet<>();
+        for (Integer vertex : this.vertexes) {
+            vertexes.add(vertex);
+        }
+
+        Map<Integer, List<Integer>> G = new HashMap<>();
+        for (Integer vertex : this.G.keySet()) {
+            G.put(vertex, new ArrayList<Integer>());
+
+            for (Integer to : this.G.get(vertex)) {
+                G.get(vertex).add(to);
+            }
+        }
+
+        g.vertexes =  vertexes;
+        g.G = G;
+
+        return g;
+    }
+
+    @Override
+    public void addVertex(int vertex) {
+        if (!vertexes.contains(vertex)) {
+            vertexes.add(vertex);
+            G.put(vertex, new ArrayList<Integer>());
+        } else {
+
+        }
+    }
+
+    @Override
+    public void removeVertex(int vertex) throws Exception {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Set<Integer> getVertexes() {
+        return this.vertexes;
+    }
+
+    private BaseGraph() {
+
+    }
+
+    public BaseGraph(BufferedReader reader) throws IOException {
         G = new HashMap<>();
-
-        BufferedReader reader = new BufferedReader(new FileReader(file));
+        vertexes = new HashSet<>();
 
         int n = parseInt(reader.readLine());
         for (int i = 0; i < n; i++) {
             String line = reader.readLine();
-            String[] splitted = line.split(" ");
+            String[] splited = line.split(" ");
 
-            int from = parseInt(splitted[0]);
+            int from = parseInt(splited[0]);
+            vertexes.add(from);
+            G.put(from, new ArrayList<Integer>());
 
-
-            for (int j = 1; j < splitted.length; j++) {
-                int to = parseInt(splitted[j]);
+            for (int j = 1; j < splited.length; j++) {
+                int to = parseInt(splited[j]);
                 addArc(from, to);
             }
         }
     }
 
     @Override
-    public void addVertex(int vertex) {
-        if (!G.containsKey(vertex)) {
-            G.put(vertex, new HashSet<Integer>());
+    public boolean isAdjacent(int from, int to) throws Exception {
+        if (!G.containsKey(from)) {
+            throw new Exception("Vertex " + from + " not found!");
         }
+
+        if (!vertexes.contains(to)) {
+            throw new Exception("Vertex " + to + " not found!");
+        }
+
+        return G.get(from).contains(to);
     }
 
     @Override
-    public void removeVertex(int vertex) throws Exception {
+    public List<Integer> getList(int vertex) throws Exception {
         if (!G.containsKey(vertex)) {
             throw new Exception("Vertex " + vertex + " not found!");
         }
 
-        G.remove(vertex);
-        for (int u : G.keySet()) {
-            if (G.get(u).contains(vertex)) {
-                G.get(u).remove(vertex);
-            }
-        }
-    }
-
-    public Set<Integer> getVertexes() {
-        return G.keySet();
+        return G.get(vertex);
     }
 
     @Override
     public void addArc(int from, int to) {
         if (!G.containsKey(from)) {
-            G.put(from, new HashSet<Integer>());
+            G.put(from, new ArrayList<Integer>());
         }
 
         G.get(from).add(to);
@@ -76,11 +120,15 @@ public class BaseGraph implements Graph, Cloneable {
             throw new Exception("Vertex " + from + " not found!");
         }
 
+        if (!vertexes.contains(to)) {
+            throw new Exception("Vertex " + to + " not found!");
+        }
+
         if (!G.get(from).contains(to)) {
             throw new Exception("Arc " + from + " -> " + to + " not found!");
         }
 
-        G.get(from).remove(to);
+        while (G.get(from).remove((Integer) to)) ;
     }
 
     @Override
@@ -98,6 +146,24 @@ public class BaseGraph implements Graph, Cloneable {
         return G.get(vertex).size() / 2;
     }
 
+    @Override
+    public int orientedDegree(int vertex) throws Exception {
+        if (!G.containsKey(vertex)) {
+            throw new Exception("Vertex " + vertex + " not found!");
+        }
+
+        int ans = G.get(vertex).size();
+        for (int u : vertexes) {
+            if (u == vertex)
+                continue;
+
+            if (G.containsKey(u) && G.get(u).contains(vertex)) {
+                ++ans;
+            }
+        }
+
+        return ans;
+    }
     public boolean hasCycles() {
         for (int from : G.keySet()) {
             if (hasCycles(from)) {
@@ -216,23 +282,17 @@ public class BaseGraph implements Graph, Cloneable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Vertexes count: ").append(G.size()).append("\n");
+        sb.append(G.size()).append("\n");
 
         for (Integer from : G.keySet()) {
             sb.append(from).append(": ");
 
-            Set<Integer> toList = G.get(from);
-            for (int to : toList) {
+            for (int to : new HashSet<>(G.get(from))) {
                 sb.append(to).append(" ");
             }
             sb.append("\n");
         }
 
         return sb.toString();
-    }
-
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
     }
 }

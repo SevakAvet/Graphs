@@ -1,6 +1,11 @@
+import java.util.List;
 import java.util.Set;
 
-public interface Graph {
+public interface Graph extends Cloneable {
+    public boolean isAdjacent(int from, int to) throws Exception;
+
+    public List<Integer> getList(int vertex) throws Exception;
+
     public void addArc(int from, int to);
 
     public void addEdge(int from, int to);
@@ -11,11 +16,15 @@ public interface Graph {
 
     public int degree(int vertex) throws Exception;
 
+    public int orientedDegree(int vertex) throws Exception;
+
     public void addVertex(int vertex);
 
     public void removeVertex(int vertex) throws Exception;
 
     public Set<Integer> getVertexes();
+
+    public Graph clone();
 }
 
 // 1 список 1 23
