@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 public class Task_1_23 {
     public static void main(String[] args) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        Graph graph = new BaseGraph(reader);
+        Graph graph = new BaseGraph(reader, false);
 
         System.out.println("Old graph");
         System.out.println(graph);

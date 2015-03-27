@@ -6,7 +6,7 @@ import java.util.List;
 public class Task_1_10 {
     public static void main(String[] args) throws Exception {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        Graph origin = new BaseGraph(reader);
+        Graph origin = new BaseGraph(reader, false);
         Graph graph = origin.clone();
 
         List<Integer> even = new ArrayList<>();

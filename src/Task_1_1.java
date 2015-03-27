@@ -4,7 +4,7 @@ import java.io.InputStreamReader;
 public class Task_1_1 {
     public static void main(String[] args) throws Exception {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        Graph graph = new BaseGraph(reader);
+        Graph graph = new BaseGraph(reader, false);
         System.out.println(graph);
 
         System.out.println("Vertexes degrees:");
