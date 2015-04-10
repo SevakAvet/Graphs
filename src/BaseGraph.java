@@ -7,6 +7,7 @@ import java.util.*;
 import static java.lang.Integer.parseInt;
 
 public class BaseGraph implements Graph {
+    private static final int INF = (int) 1e9;
     private Map<Integer, Set<Integer>> G;
     private Set<Integer> vertexes;
     private Map<Pair, Integer> GW;
@@ -206,46 +207,51 @@ public class BaseGraph implements Graph {
 
         for (int u : vertexes) {
             for (int v : vertexes) {
-                d.put(new Pair(u, u), 0);
-                d.put(new Pair(v, v), 0);
+                Pair uu = new Pair(u, u);
+                Pair vv = new Pair(v, v);
+                Pair uv = new Pair(u, v);
 
-                Pair p1 = new Pair(u, v);
-                if (GW.containsKey(p1)) {
-                    d.put(p1, GW.get(p1));
+                d.put(uu, 0);
+                d.put(vv, 0);
+
+                if (GW.containsKey(uu) && GW.get(uu) < 0) {
+                    d.put(uu, GW.get(uu));
+                }
+
+                if (GW.containsKey(vv) && GW.get(vv) < 0) {
+                    d.put(vv, GW.get(vv));
+                }
+
+                if (GW.containsKey(uv)) {
+                    d.put(uv, GW.get(uv));
                 }
             }
         }
 
-        System.out.println(d);
-
-        for (int i : vertexes) {
-            for (int j : vertexes) {
-                for (int t : vertexes) {
+        for (int k : vertexes) {
+            for (int i : vertexes) {
+                for (int j : vertexes) {
                     Pair p1 = new Pair(i, j);
-                    Pair p2 = new Pair(i, t);
-                    Pair p3 = new Pair(t, j);
+                    Pair p2 = new Pair(i, k);
+                    Pair p3 = new Pair(k, j);
 
                     d.putIfAbsent(p1, INF);
                     d.putIfAbsent(p2, INF);
                     d.putIfAbsent(p3, INF);
 
-                    if (d.get(p1) > d.get(p2) + d.get(p3) && d.get(p2) < INF / 2 && d.get(p3) < INF / 2) {
+                    if (d.get(p2) < INF / 2 && d.get(p3) < INF / 2 && d.get(p1) > d.get(p2) + d.get(p3)) {
                         d.put(p1, d.get(p2) + d.get(p3));
                     }
                 }
             }
         }
 
-        for (int i : vertexes) {
-            for (int j : vertexes) {
-                for (int t : vertexes) {
-                    Pair p2 = new Pair(i, t);
-                    Pair p3 = new Pair(t, j);
 
-                    if (d.get(p2) < INF && d.get(new Pair(t, t)) < 0 && d.get(p3) < INF) {
-                        return INF;
-                    }
-                }
+        System.out.println(d);
+
+        for (int t : vertexes) {
+            if (d.get(new Pair(t, t)) < 0) {
+                return INF;
             }
         }
 
@@ -253,13 +259,41 @@ public class BaseGraph implements Graph {
         for (int u : vertexes) {
             int r = -1;
             for (int v : vertexes) {
-                r = Math.max(r, d.getOrDefault(new Pair(u, v), -1));
+                r = Math.max(r, d.getOrDefault(new Pair(v, u), -1));
             }
             radius = Math.min(radius, r);
         }
 
         return radius;
     }
+
+    public Map<Pair, Integer> MST() {
+        Map<Pair, Integer> d = new HashMap<>();
+        int[] id = new int[vertexes.size()];
+        for (int i = 0; i < id.length; i++) {
+            id[i] = i;
+        }
+
+        int n = vertexes.size();
+        int m = 0;
+
+        while (m < n - 1) {
+            for (int u : vertexes) {
+                int min = INF;
+                int curId = -1;
+                for (int v : G.get(u)) {
+                    Pair key = new Pair(u, v);
+
+                    if(GW.get(key) < min) {
+                        min = GW.get(key);
+                    }
+                }
+            }
+        }
+
+        return d;
+    }
+
 
     private class Pair {
         int x, y;

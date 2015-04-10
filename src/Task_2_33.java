@@ -6,6 +6,6 @@ public class Task_2_33 {
         BaseGraph g = new BaseGraph(new File("input.txt"), true);
         System.out.println(g);
         int radius = g.radius();
-        System.out.println(radius == (int) 1e9 ? "Есть цикл отрицательного веса" : radius);
+        System.out.println(radius == (int) 1e9 ? "Невозможно найти радиус" : "Радиус: " + radius);
     }
 }
