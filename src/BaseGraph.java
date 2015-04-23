@@ -8,6 +8,11 @@ import static java.lang.Integer.parseInt;
 
 public class BaseGraph implements Graph {
     private static final int INF = (int) 1e9;
+
+    public Map<Integer, Set<Integer>> getG() {
+        return G;
+    }
+
     private Map<Integer, Set<Integer>> G;
     private Set<Integer> vertexes;
     private Map<Pair, Integer> GW;
@@ -37,7 +42,7 @@ public class BaseGraph implements Graph {
 
                     GW.put(new Pair(from, to), w);
                     vertexes.add(to);
-                    addArc(from, to);
+                    addEdge(from, to);
                 }
             }
         } else {
@@ -268,34 +273,48 @@ public class BaseGraph implements Graph {
     }
 
     public Map<Pair, Integer> MST() {
-        Map<Pair, Integer> d = new HashMap<>();
-        int[] id = new int[vertexes.size()];
-        for (int i = 0; i < id.length; i++) {
-            id[i] = i;
+        Map<Integer, Set<Integer>> t = new HashMap<>();
+        Map<Pair, Integer> ans = new HashMap<>();
+
+        for (int u : vertexes) {
+            t.put(u, new HashSet<>());
         }
 
-        int n = vertexes.size();
-        int m = 0;
+        while (true) {
+            List<Set<Integer>> components = components(t);
+            if (components.size() == 1) {
+                break;
+            }
 
-        while (m < n - 1) {
-            for (int u : vertexes) {
-                int min = INF;
-                int curId = -1;
+            int min = (int) 1e9;
+            Pair candidate = null;
+
+            Set<Integer> component = components.get(0);
+            for (int u : component) {
+                if (!G.containsKey(u))
+                    continue;
                 for (int v : G.get(u)) {
-                    Pair key = new Pair(u, v);
-
-                    if(GW.get(key) < min) {
-                        min = GW.get(key);
+                    Pair edge = new Pair(u, v);
+                    if (GW.get(edge) < min && !component.contains(v)) {
+                        min = GW.get(edge);
+                        candidate = edge;
                     }
                 }
             }
+
+            ans.put(candidate, min);
+            if (!t.containsKey(candidate.x)) {
+                t.put(candidate.x, new HashSet<>());
+            }
+
+            t.get(candidate.x).add(candidate.y);
         }
 
-        return d;
+        return ans;
     }
 
 
-    private class Pair {
+    public class Pair {
         int x, y;
 
         private Pair(int x, int y) {
@@ -352,6 +371,31 @@ public class BaseGraph implements Graph {
         }
 
         return ans;
+    }
+
+    public List<Set<Integer>> components(Map<Integer, Set<Integer>> G) {
+        List<Set<Integer>> components = new ArrayList<>();
+        Set<Integer> used = new HashSet<>();
+
+        G.keySet().stream().filter(from -> !used.contains(from)).forEach(from -> {
+            Set<Integer> curComponent = new HashSet<Integer>();
+            Queue<Integer> q = new LinkedList<>();
+            q.add(from);
+
+            while (!q.isEmpty()) {
+                int u = q.poll();
+                curComponent.add(u);
+                if (!G.containsKey(u)) continue;
+
+                G.get(u).stream().filter(v -> !used.contains(v)).forEach(v -> {
+                    used.add(v);
+                    q.add(v);
+                });
+            }
+            components.add(curComponent);
+        });
+
+        return components;
     }
 
     public BaseGraph clone() {

@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,6 +13,6 @@ public class Task_3_Boruvka {
     public static void main(String[] args) throws IOException {
         BaseGraph g = new BaseGraph(new File("input.txt"), true);
 
-
+        System.out.println(g.MST());
     }
 }
