@@ -1,4 +1,5 @@
-import java.util.List;
+package algo;
+
 import java.util.Set;
 
 public interface Graph extends Cloneable {

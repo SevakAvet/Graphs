@@ -1,3 +1,5 @@
+package algo;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -5,6 +7,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Integer.parseInt;
+import static java.lang.Math.*;
 
 public class BaseGraph implements Graph {
     private static final int INF = (int) 1e9;
@@ -264,7 +267,7 @@ public class BaseGraph implements Graph {
         for (int u : vertexes) {
             int r = -1;
             for (int v : vertexes) {
-                r = Math.max(r, d.getOrDefault(new Pair(v, u), -1));
+                r = max(r, d.getOrDefault(new Pair(v, u), -1));
             }
             radius = Math.min(radius, r);
         }
@@ -289,28 +292,57 @@ public class BaseGraph implements Graph {
             int min = (int) 1e9;
             Pair candidate = null;
 
-            Set<Integer> component = components.get(0);
-            for (int u : component) {
-                if (!G.containsKey(u))
-                    continue;
-                for (int v : G.get(u)) {
-                    Pair edge = new Pair(u, v);
-                    if (GW.get(edge) < min && !component.contains(v)) {
-                        min = GW.get(edge);
-                        candidate = edge;
+            List<Pair> edges = new ArrayList<>();
+            List<Integer> weights = new ArrayList<>();
+            for (Set<Integer> component : components) {
+                for (int u : component) {
+                    if (!G.containsKey(u))
+                        continue;
+                    for (int v : G.get(u)) {
+                        Pair edge = new Pair(u, v);
+                        if (GW.get(edge) < min && !component.contains(v)) {
+                            min = GW.get(edge);
+                            candidate = edge;
+                        }
                     }
                 }
+
+                edges.add(candidate);
+                weights.add(min);
             }
 
-            ans.put(candidate, min);
-            if (!t.containsKey(candidate.x)) {
-                t.put(candidate.x, new HashSet<>());
-            }
+            for (int i = 0; i < edges.size(); ++i) {
+                Pair edge = edges.get(i);
+                int weight = weights.get(i);
 
-            t.get(candidate.x).add(candidate.y);
+                ans.put(edge, weight);
+                if (!t.containsKey(edge.x)) {
+                    t.put(edge.x, new HashSet<>());
+                }
+
+                t.get(edge.x).add(edge.y);
+            }
         }
 
-        return ans;
+
+        Map<Pair, Integer> newAns = new HashMap<>();
+        Set<Pair> toAdd = new HashSet<>();
+        for(Pair pair : ans.keySet()) {
+            Pair inv = new Pair(pair.y, pair.x);
+            if(ans.containsKey(inv) && ans.get(inv).equals(ans.get(pair))) {
+                inv = new Pair(min(pair.x, pair.y), max(pair.x, pair.y));
+                toAdd.add(inv);
+                continue;
+            }
+
+            newAns.put(pair, ans.get(pair));
+        }
+
+        for(Pair pair : toAdd) {
+            newAns.put(pair, ans.get(pair));
+        }
+
+        return newAns;
     }
 
 
@@ -446,7 +478,7 @@ public class BaseGraph implements Graph {
                 if (used.contains(v)) continue;
 
                 int min = Math.min(u, v);
-                int max = Math.max(u, v);
+                int max = max(u, v);
                 Pair p = new Pair(min, max);
                 ans.add(p);
             }

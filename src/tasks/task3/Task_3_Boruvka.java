@@ -1,3 +1,7 @@
+package tasks.task3;
+
+import algo.BaseGraph;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -14,5 +18,6 @@ public class Task_3_Boruvka {
         BaseGraph g = new BaseGraph(new File("input.txt"), true);
 
         System.out.println(g.MST());
+        System.out.println(g.MST().size());
     }
 }
