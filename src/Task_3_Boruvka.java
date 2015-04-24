@@ -1,10 +1,5 @@
-package tasks.task3;
-
-import algo.BaseGraph;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.

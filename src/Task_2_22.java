@@ -1,10 +1,5 @@
-package tasks.task2;
-
 import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class Task_2_22 {

@@ -1,5 +1,3 @@
-package algo;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -209,8 +207,7 @@ public class BaseGraph implements Graph {
         return false;
     }
 
-    public int radius() {
-        int INF = (int) 1e9;
+    public Map<Pair, Integer> floyd() {
         Map<Pair, Integer> d = new HashMap<>();
 
         for (int u : vertexes) {
@@ -254,7 +251,15 @@ public class BaseGraph implements Graph {
             }
         }
 
+        return d;
+    }
 
+    public int dijkstra(int u, int v) {
+        return 0;
+    }
+
+    public int radius() {
+        Map<Pair, Integer> d = floyd();
         System.out.println(d);
 
         for (int t : vertexes) {
@@ -345,11 +350,10 @@ public class BaseGraph implements Graph {
         return newAns;
     }
 
-
-    public class Pair {
+    static class Pair {
         int x, y;
 
-        private Pair(int x, int y) {
+        Pair(int x, int y) {
             this.x = x;
             this.y = y;
         }
