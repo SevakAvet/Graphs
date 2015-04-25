@@ -5,7 +5,8 @@ import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Integer.parseInt;
-import static java.lang.Math.*;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class BaseGraph implements Graph {
     private static final int INF = (int) 1e9;
@@ -254,8 +255,40 @@ public class BaseGraph implements Graph {
         return d;
     }
 
-    public int dijkstra(int u, int v) {
-        return 0;
+    public int dijkstra(int start, int end) {
+        Map<Integer, Integer> d = new HashMap<>();
+        Set<Integer> used = new HashSet<>();
+
+        for (Integer vertex : vertexes) {
+            d.put(vertex, INF);
+        }
+        d.put(start, 0);
+
+        for (int i = 0; i < vertexes.size(); ++i) {
+            int v = -1;
+
+            for(int j : vertexes) {
+                if(!used.contains(j) && (v == -1 || d.get(j) < d.get(v))) {
+                    v = j;
+                }
+            }
+
+            if(d.get(v) == INF) {
+                break;
+            }
+
+            used.add(v);
+
+            for(int to : G.get(v)) {
+                Integer weight = GW.get(new Pair(v, to));
+
+                if(d.get(v) + weight < d.get(to)) {
+                    d.put(to, d.get(v) + weight);
+                }
+            }
+        }
+
+        return d.get(end);
     }
 
     public int radius() {
@@ -293,6 +326,7 @@ public class BaseGraph implements Graph {
             if (components.size() == 1) {
                 break;
             }
+            System.out.println(components.size() + " " + components);
 
             int min = (int) 1e9;
             Pair candidate = null;
@@ -321,6 +355,10 @@ public class BaseGraph implements Graph {
                 int weight = weights.get(i);
 
                 ans.put(edge, weight);
+                if(edge == null) {
+                    continue;
+                }
+
                 if (!t.containsKey(edge.x)) {
                     t.put(edge.x, new HashSet<>());
                 }
@@ -332,9 +370,9 @@ public class BaseGraph implements Graph {
 
         Map<Pair, Integer> newAns = new HashMap<>();
         Set<Pair> toAdd = new HashSet<>();
-        for(Pair pair : ans.keySet()) {
+        for (Pair pair : ans.keySet()) {
             Pair inv = new Pair(pair.y, pair.x);
-            if(ans.containsKey(inv) && ans.get(inv).equals(ans.get(pair))) {
+            if (ans.containsKey(inv) && ans.get(inv).equals(ans.get(pair))) {
                 inv = new Pair(min(pair.x, pair.y), max(pair.x, pair.y));
                 toAdd.add(inv);
                 continue;
@@ -343,7 +381,7 @@ public class BaseGraph implements Graph {
             newAns.put(pair, ans.get(pair));
         }
 
-        for(Pair pair : toAdd) {
+        for (Pair pair : toAdd) {
             newAns.put(pair, ans.get(pair));
         }
 

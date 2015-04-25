@@ -13,6 +13,5 @@ public class Task_3_Boruvka {
         BaseGraph g = new BaseGraph(new File("input.txt"), true);
 
         System.out.println(g.MST());
-        System.out.println(g.MST().size());
     }
 }
