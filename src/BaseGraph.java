@@ -255,6 +255,28 @@ public class BaseGraph implements Graph {
         return d;
     }
 
+    public Set<Pair> pairsWithPathInNegCycle() {
+        Set<Pair> ans = new HashSet<>();
+        Map<Pair, Integer> floyd = floyd();
+
+        for (int i : vertexes) {
+            for (int j : vertexes) {
+                for (int t : vertexes) {
+                    Pair p1 = new Pair(t, t);
+                    Pair p2 = new Pair(i, t);
+                    Pair p3 = new Pair(t, j);
+
+                    if (floyd.get(p1) < 0 && floyd.get(p2) < INF && floyd.get(p3) < INF) {
+                        Pair edge = new Pair(min(i, j), max(i, j));
+                        ans.add(edge);
+                    }
+                }
+            }
+        }
+
+        return ans;
+    }
+
     public int dijkstra(int start, int end) {
         Map<Integer, Integer> d = new HashMap<>();
         Set<Integer> used = new HashSet<>();
@@ -267,22 +289,22 @@ public class BaseGraph implements Graph {
         for (int i = 0; i < vertexes.size(); ++i) {
             int v = -1;
 
-            for(int j : vertexes) {
-                if(!used.contains(j) && (v == -1 || d.get(j) < d.get(v))) {
+            for (int j : vertexes) {
+                if (!used.contains(j) && (v == -1 || d.get(j) < d.get(v))) {
                     v = j;
                 }
             }
 
-            if(d.get(v) == INF) {
+            if (d.get(v) == INF) {
                 break;
             }
 
             used.add(v);
 
-            for(int to : G.get(v)) {
+            for (int to : G.get(v)) {
                 Integer weight = GW.get(new Pair(v, to));
 
-                if(d.get(v) + weight < d.get(to)) {
+                if (d.get(v) + weight < d.get(to)) {
                     d.put(to, d.get(v) + weight);
                 }
             }
@@ -355,7 +377,7 @@ public class BaseGraph implements Graph {
                 int weight = weights.get(i);
 
                 ans.put(edge, weight);
-                if(edge == null) {
+                if (edge == null) {
                     continue;
                 }
 
