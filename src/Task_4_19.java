@@ -1,15 +1,19 @@
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
+import java.util.*;
 
 /**
- * Created by Севак on 25.04.2015.
+ * Created by пїЅпїЅпїЅпїЅпїЅ on 25.04.2015.
  */
 public class Task_4_19 {
     public static void main(String[] args) throws IOException {
         BaseGraph g = new BaseGraph(new File("input.txt"), true);
 
         Set<BaseGraph.Pair> pairs = g.pairsWithPathInNegCycle();
-        System.out.println(pairs);
+        List<BaseGraph.Pair> pairsList = new ArrayList<>();
+        pairsList.addAll(pairs);
+        Collections.sort(pairsList, (o1, o2) -> Integer.compare(o1.x, o2.x));
+
+        System.out.println(pairsList);
     }
 }
