@@ -18,6 +18,8 @@ public class BaseGraph implements Graph {
     private Map<Integer, Set<Integer>> G;
     private Set<Integer> vertexes;
     private Map<Pair, Integer> GW;
+    private Map<Pair, Integer> c;
+    private Map<Pair, Integer> f;
     private boolean isWeighted;
 
     private BaseGraph() {
@@ -44,7 +46,7 @@ public class BaseGraph implements Graph {
 
                     GW.put(new Pair(from, to), w);
                     vertexes.add(to);
-                    addEdge(from, to);
+                    addArc(from, to);
                 }
             }
         } else {
@@ -206,6 +208,75 @@ public class BaseGraph implements Graph {
 
         colors.put(from, 2);
         return false;
+    }
+
+    public int maxFlow(int s, int t) {
+        c = new HashMap<>();
+        f = new HashMap<>();
+
+        for (Integer u : G.keySet()) {
+            for (Integer v : G.get(u)) {
+                Pair edge = new Pair(u, v);
+                Pair edgeRev = new Pair(v, u);
+
+                f.putIfAbsent(edge, 0);
+                f.putIfAbsent(edgeRev, 0);
+
+                c.putIfAbsent(edge, 0);
+                c.put(edge, c.get(edge) + GW.get(edge));
+            }
+        }
+
+        int sum = 0;
+        while(enlarge(s, t));
+
+        for (Integer i : G.get(s)) {
+            sum += f.get(new Pair(s, i));
+        }
+        return sum;
+    }
+
+    private boolean enlarge(int s, int t) {
+        Queue<Integer> q = new LinkedList<>();
+        Map<Integer, Integer> mf = new HashMap<>();
+        Map<Integer, Integer> p = new HashMap<>();
+
+        for (Integer v : vertexes) {
+            mf.put(v, 0);
+        }
+        mf.put(s, INF);
+        p.put(s, s);
+
+        q.add(s);
+        while(!q.isEmpty() && mf.get(t) == 0) {
+            int u = q.poll();
+
+            for (Integer v : G.get(u)) {
+                Pair edge = new Pair(u, v);
+                int val = c.get(edge) - f.get(edge);
+
+                if(val > 0 && mf.get(v) == 0) {
+                    mf.put(v, Math.min(mf.get(u), val));
+                    q.add(v);
+                    p.put(v, u);
+                }
+            }
+        }
+
+        if(mf.get(t) == 0) {
+            return false;
+        }
+
+        int v = t;
+        while(p.get(v) != v) {
+            Pair fw = new Pair(p.get(v), v);
+            Pair bw = new Pair(v, p.get(v));
+            f.put(fw, f.get(fw) + mf.get(t));
+            f.put(bw, f.get(bw) - mf.get(t));
+            v = p.get(v);
+        }
+
+        return true;
     }
 
     public Map<Pair, Integer> floyd() {
