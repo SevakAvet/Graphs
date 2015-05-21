@@ -9,6 +9,6 @@ import java.io.IOException;
 public class Task_5 {
     public static void main(String[] args) throws IOException {
         BaseGraph g = new BaseGraph(new File("input.txt"), true);
-        System.out.println("Max flow: " + g.maxFlow(1, 4));
+        System.out.println("Max flow: " + g.maxFlow(1, 8));
     }
 }

@@ -66,7 +66,6 @@ public class BaseGraph implements Graph {
                 }
             }
         }
-
     }
 
     public BaseGraph(File file, boolean isWeighted) throws IOException {
@@ -214,6 +213,30 @@ public class BaseGraph implements Graph {
         c = new HashMap<>();
         f = new HashMap<>();
 
+        List<Pair> toAdd = new ArrayList<>();
+        for (Integer u : G.keySet()) {
+            for (Integer v : G.get(u)) {
+                if(!G.containsKey(v)) {
+                    toAdd.add(new Pair(v, u));
+                } else {
+                    if(!G.get(v).contains(u)) {
+                        toAdd.add(new Pair(v, u));
+                    }
+                }
+            }
+        }
+
+        for (Pair pair : toAdd) {
+            if(!G.containsKey(pair.x)) {
+                G.put(pair.x, new HashSet<>());
+            }
+
+            G.get(pair.x).add(pair.y);
+            GW.put(pair, 0);
+        }
+
+        System.out.println(G);
+
         for (Integer u : G.keySet()) {
             for (Integer v : G.get(u)) {
                 Pair edge = new Pair(u, v);
@@ -229,6 +252,7 @@ public class BaseGraph implements Graph {
 
         int sum = 0;
         while(enlarge(s, t));
+        System.out.println(f);
 
         for (Integer i : G.get(s)) {
             sum += f.get(new Pair(s, i));
